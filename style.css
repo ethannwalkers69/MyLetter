@@ -1,0 +1,638 @@
+/* ==========================================================================
+   SECRET MESSAGE — styles
+   Mobile-first. Every animated effect below is pure CSS/SVG-shape based —
+   there are no external image assets to keep the page fully offline.
+   ========================================================================== */
+
+:root{
+  /* --- brand tokens --- */
+  --bg:            #090909;
+  --primary:       #ff4f9b;
+  --secondary:     #c26cff;
+  --text:          #ffffff;
+  --gold:          #ffd76e;  /* single warm accent reserved for the wax seal */
+
+  --glass-bg:      rgba(255, 255, 255, 0.06);
+  --glass-bg-2:    rgba(255, 255, 255, 0.10);
+  --glass-border:  rgba(255, 255, 255, 0.18);
+
+  --glow-primary:  0 0 40px rgba(255, 79, 155, 0.45);
+  --glow-secondary:0 0 55px rgba(194, 108, 255, 0.35);
+
+  --ease-soft:     cubic-bezier(.22, .9, .32, 1);
+  --ease-bounce:   cubic-bezier(.34, 1.56, .64, 1);
+
+  --font-display:  Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  --font-body:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+html, body{
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+body{
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100dvh;
+  overflow: hidden; /* scenes fill the viewport; no page scroll */
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button{
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ==========================================================================
+   Ambient background — animated gradient blobs
+   ========================================================================== */
+
+.bg-decor{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob{
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.35;
+  will-change: transform;
+}
+
+.blob-a{
+  background: radial-gradient(circle at 30% 30%, var(--primary), transparent 70%);
+  top: -20vmax;
+  left: -15vmax;
+  animation: driftA 18s ease-in-out infinite;
+}
+
+.blob-b{
+  background: radial-gradient(circle at 70% 70%, var(--secondary), transparent 70%);
+  bottom: -22vmax;
+  right: -18vmax;
+  animation: driftB 22s ease-in-out infinite;
+}
+
+@keyframes driftA{
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(6vmax, 8vmax) scale(1.15); }
+}
+@keyframes driftB{
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-5vmax, -6vmax) scale(1.1); }
+}
+
+/* floating ambient particles */
+.particle-layer{
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle{
+  position: absolute;
+  bottom: -5vh;
+  left: var(--x, 50%);
+  font-size: var(--size, 14px);
+  opacity: 0;
+  animation: floatUp var(--duration, 9s) linear var(--delay, 0s) infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 79, 155, 0.5));
+}
+
+@keyframes floatUp{
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.85; }
+  90%  { opacity: 0.6; }
+  100% { transform: translate(var(--drift, 40px), -115vh) rotate(360deg); opacity: 0; }
+}
+
+/* ==========================================================================
+   Layout — scenes
+   ========================================================================== */
+
+#app{
+  position: relative;
+  z-index: 2;
+  height: 100dvh;
+  width: 100%;
+}
+
+.scene{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6vh 5vw;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.94);
+  filter: blur(14px);
+  transition:
+    opacity 0.6s var(--ease-soft),
+    transform 0.6s var(--ease-soft),
+    filter 0.6s var(--ease-soft),
+    visibility 0s linear 0.6s;
+  pointer-events: none;
+}
+
+.scene.is-active{
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  filter: blur(0);
+  transition:
+    opacity 0.7s var(--ease-soft),
+    transform 0.7s var(--ease-soft),
+    filter 0.7s var(--ease-soft);
+  pointer-events: auto;
+}
+
+.scene-inner{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(14px, 3vh, 22px);
+  max-width: 520px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   Scene 1 — Question
+   ========================================================================== */
+
+.emoji-pop{
+  font-size: clamp(56px, 14vw, 88px);
+  animation: emojiIn 0.8s var(--ease-bounce) both, wobble 3.2s ease-in-out 0.8s infinite;
+  filter: drop-shadow(0 0 24px rgba(255, 79, 155, 0.35));
+}
+
+@keyframes emojiIn{
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes wobble{
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+
+.q-heading{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(28px, 7vw, 46px);
+  margin: 0;
+  letter-spacing: 0.01em;
+  text-shadow: var(--glow-primary);
+}
+
+.hint{
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
+}
+
+.button-row{
+  position: relative;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 64px;
+}
+
+.btn{
+  padding: 14px 34px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.25s var(--ease-bounce), box-shadow 0.25s var(--ease-soft);
+}
+
+.btn-yes{
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  box-shadow: var(--glow-primary);
+}
+.btn-yes:hover{ transform: translateY(-2px) scale(1.04); }
+.btn-yes:active{ transform: translateY(0) scale(0.97); }
+
+.btn-no{
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.85);
+  /* positioned absolutely once JS takes over dodge behaviour */
+}
+
+.btn-no.is-roaming{
+  position: fixed;
+  z-index: 5;
+  transition: top 0.45s var(--ease-soft), left 0.45s var(--ease-soft);
+}
+
+.btn-no.is-bouncing{
+  animation: noBounce 0.45s var(--ease-bounce);
+}
+
+@keyframes noBounce{
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  70%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+/* ==========================================================================
+   Scene 2 — Love screen
+   ========================================================================== */
+
+.glow-heading{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(38px, 12vw, 74px);
+  letter-spacing: 0.06em;
+  margin: 0;
+  background: linear-gradient(135deg, #fff 10%, var(--primary) 60%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: var(--glow-primary);
+  animation: heartbeat 2.6s ease-in-out infinite;
+}
+
+@keyframes heartbeat{
+  0%, 100% { transform: scale(1); }
+  10%      { transform: scale(1.05); }
+  20%      { transform: scale(1); }
+}
+
+.subtitle{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(16px, 4vw, 20px);
+  color: rgba(255, 255, 255, 0.7);
+  margin: -6px 0 10px;
+  letter-spacing: 0.03em;
+}
+
+/* --- envelope (CSS-built, no image asset) --- */
+
+.envelope{
+  position: relative;
+  background: none;
+  padding: 0;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: floatEnvelope 3.4s ease-in-out infinite;
+}
+
+@keyframes floatEnvelope{
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+.envelope:hover .envelope-body{
+  transform: scale(1.05);
+}
+
+.envelope-shadow{
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  width: 60%;
+  height: 18px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.55), transparent 70%);
+  border-radius: 50%;
+}
+
+.envelope-body{
+  position: relative;
+  width: clamp(160px, 40vw, 210px);
+  height: clamp(108px, 27vw, 142px);
+  transition: transform 0.3s var(--ease-bounce);
+}
+
+.envelope-back{
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(155deg, var(--glass-bg-2), var(--glass-bg));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glow-secondary);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.envelope-back::before, .envelope-back::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 52%;
+  height: 78%;
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--glass-border);
+}
+.envelope-back::before{ left: 0; clip-path: polygon(0 0, 100% 100%, 0 100%); border-radius: 0 0 0 14px; }
+.envelope-back::after{ right: 0; clip-path: polygon(100% 0, 100% 100%, 0 100%); border-radius: 0 0 14px 0; }
+
+.envelope-flap{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 62%;
+  background: linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+  border: 1px solid var(--glass-border);
+  border-bottom: none;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border-radius: 14px 14px 0 0;
+  transform-origin: top center;
+  transition: transform 0.7s var(--ease-soft);
+  z-index: 2;
+}
+
+.envelope-seal{
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seal-half{
+  position: absolute;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(255, 215, 110, 0.7);
+  transition: transform 0.6s var(--ease-soft), opacity 0.5s ease;
+}
+.seal-left{ clip-path: inset(0 50% 0 0); }
+.seal-right{ clip-path: inset(0 0 0 50%); }
+
+.envelope-label{
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* --- envelope opening sequence, triggered via .is-opening class --- */
+
+.envelope.is-opening{
+  animation: none;
+  pointer-events: none;
+}
+.envelope.is-opening .envelope-flap{
+  transform: rotateX(180deg);
+}
+.envelope.is-opening .seal-left{
+  transform: translateX(-14px) rotate(-25deg);
+  opacity: 0;
+}
+.envelope.is-opening .seal-right{
+  transform: translateX(14px) rotate(25deg);
+  opacity: 0;
+}
+.envelope.is-opening .envelope-body{
+  animation: envelopePulse 0.5s var(--ease-bounce) 0.15s both;
+}
+@keyframes envelopePulse{
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1.02); }
+}
+
+/* ==========================================================================
+   Scene 3 — Secret letter
+   ========================================================================== */
+
+.letter-card{
+  background: linear-gradient(160deg, var(--glass-bg-2), var(--glass-bg));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+  padding: clamp(28px, 6vw, 44px) clamp(22px, 6vw, 40px);
+  box-shadow: var(--glow-primary), 0 20px 60px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 460px;
+  animation: letterIn 0.7s var(--ease-bounce) both;
+  transition: opacity 0.5s var(--ease-soft), transform 0.5s var(--ease-soft);
+}
+
+@keyframes letterIn{
+  0%   { transform: scale(0.7) translateY(30px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.letter-card.is-closing{
+  opacity: 0;
+  transform: scale(0.85) translateY(20px);
+  filter: blur(6px);
+}
+
+.letter-title{
+  font-family: var(--font-display);
+  font-size: clamp(24px, 6vw, 30px);
+  margin: 0 0 6px;
+  text-shadow: var(--glow-primary);
+}
+
+.letter-line{
+  margin: 0;
+  font-size: clamp(15px, 4vw, 17px);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
+  min-height: 1.6em;
+}
+
+.type-line.is-typing::after{
+  content: '';
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--primary);
+  animation: cursorBlink 0.9s step-end infinite;
+}
+
+@keyframes cursorBlink{
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+.letter-line-final{
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--primary);
+  margin-top: 4px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.6s var(--ease-soft), transform 0.6s var(--ease-soft);
+}
+
+.letter-line-final.is-visible{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.thank-you{
+  text-align: center;
+  animation: fadeInUp 0.8s var(--ease-soft) both;
+}
+
+.thank-you p{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(18px, 5vw, 24px);
+  color: #fff;
+  text-shadow: var(--glow-primary);
+}
+
+@keyframes fadeInUp{
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Overlay effect layers — confetti & heart burst
+   ========================================================================== */
+
+.confetti-layer, .burst-layer{
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece{
+  position: absolute;
+  top: -5vh;
+  left: var(--x, 50%);
+  width: var(--w, 8px);
+  height: var(--h, 14px);
+  background: var(--c, var(--primary));
+  opacity: 0.9;
+  border-radius: 2px;
+  animation: confettiFall var(--duration, 4s) linear var(--delay, 0s) forwards;
+}
+
+@keyframes confettiFall{
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--drift, 60px), 110vh) rotate(var(--spin, 540deg)); opacity: 0.4; }
+}
+
+.burst-heart{
+  position: absolute;
+  top: var(--y, 50%);
+  left: var(--x, 50%);
+  font-size: var(--size, 22px);
+  color: var(--primary);
+  transform: translate(-50%, -50%);
+  animation: burstOut var(--duration, 0.9s) var(--ease-soft) forwards;
+}
+
+@keyframes burstOut{
+  0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, -80px))) scale(1.1); opacity: 0; }
+}
+
+/* ==========================================================================
+   Footer — copyright line
+   ========================================================================== */
+
+.site-footer{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom, 10px);
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Reduced motion — respect user preference
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce){
+  .blob, .particle, .emoji-pop, .glow-heading, .envelope, .letter-card{
+    animation: none !important;
+  }
+  .scene, .btn-no.is-roaming, .envelope-body{
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   Small phones — tighten spacing
+   ========================================================================== */
+
+@media (max-width: 360px){
+  .button-row{ gap: 12px; }
+  .btn{ padding: 12px 24px; font-size: 15px; }
+}
+
+/* ==========================================================================
+   Landscape / short viewports — keep everything visible without scroll
+   ========================================================================== */
+
+@media (max-height: 480px){
+  .scene-inner{ gap: 10px; }
+  .emoji-pop{ font-size: 40px; }
+  .envelope-body{ width: 130px; height: 88px; }
+  .letter-card{ padding: 18px 22px; gap: 8px; }
+  .letter-line{ font-size: 13px; line-height: 1.45; }
+}
+
+/* ==========================================================================
+   Tablet and up
+   ========================================================================== */
+
+@media (min-width: 720px){
+  .scene-inner{ max-width: 620px; }
+}
